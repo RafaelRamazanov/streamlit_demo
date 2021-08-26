@@ -16,12 +16,18 @@ num_features = ["week", "checkout_price", "base_price", "op_area"]
 feature_cols = num_features + cat_features
 
 st.sidebar.markdown('**Как Вы хотите ввести данные?**')
-input_type = st.sidebar.selectbox("", ('Загрузить файл', 'Ввести данные с клавиатуры'))
+input_type = st.sidebar.selectbox("", ('Ввести данные с клавиатуры', 'Загрузить файл'))
 
 unique_center_id = joblib.load('unique_center_id.pkl')
 unique_meal_id = joblib.load('unique_meal_id.pkl')
 
 st.title('Meal Demand Forecasting')
+
+st.info(
+ 		"""
+    		В меню слева можно выбрать способ ввода информации для прогноза.
+    		"""
+				)
 
 @st.cache
 def get_fulfilment_center_info():
@@ -61,24 +67,7 @@ def create_df(week, checkout_price, base_price, center_id, meal_id, emailer_for_
 	
 
 def get_input(input_type):
-	if input_type == 'Загрузить файл':
-		st.info(
- 			"""
-    		Загрузите файл формата CSV.\n
-    		Файл не должен превышать 200 MB
-    		"""
-				)
-		data = st.file_uploader("", type=['csv'])
-		if data is not None:
-			df = pd.read_csv(data)
-			df = df.merge(meal_info, on="meal_id", how="left").merge(
-	                   fulfilment_center_info, on="center_id", how="left")
-			df = df[feature_cols]
-			return df
-		else:
-			return None
-
-	elif input_type == 'Ввести данные с клавиатуры':
+	if input_type == 'Ввести данные с клавиатуры':
 		global meal_id
 		global center_id
 		global week
@@ -111,6 +100,23 @@ def get_input(input_type):
 			df = create_df(week, checkout_price, base_price, center_id, meal_id, emailer_for_promotion, homepage_featured)
 			return df
 		pass
+
+	elif input_type == 'Загрузить файл':
+		st.info(
+ 			"""
+    		Загрузите файл формата CSV.\n
+    		Файл не должен превышать 200 MB
+    		"""
+				)
+		data = st.file_uploader("", type=['csv'])
+		if data is not None:
+			df = pd.read_csv(data)
+			df = df.merge(meal_info, on="meal_id", how="left").merge(
+	                   fulfilment_center_info, on="center_id", how="left")
+			df = df[feature_cols]
+			return df
+		else:
+			return None
 
 
 fulfilment_center_info = get_fulfilment_center_info()
