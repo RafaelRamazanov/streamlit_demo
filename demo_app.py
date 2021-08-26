@@ -110,9 +110,19 @@ def get_input(input_type):
 				)
 		data = st.file_uploader("", type=['csv'])
 		if data is not None:
-			df = pd.read_csv(data)
-			df = df.merge(meal_info, on="meal_id", how="left").merge(
-	                   fulfilment_center_info, on="center_id", how="left")
+			try:
+				df = pd.read_csv(data)
+				df = df.merge(meal_info, on="meal_id", how="left").merge(
+		                   fulfilment_center_info, on="center_id", how="left")
+			except:
+				 st.error(
+				 	"""
+				 	Файл не подходит для прогноза!
+				  	Он должен содержать поля: "checkout_price", "base_price", "center_id", 
+				  	"meal_id", "week", "emailer_for_promotion" и "homepage_featured".
+				  	"""
+				  	)
+				 return None
 			df = df[feature_cols]
 			return df
 		else:
