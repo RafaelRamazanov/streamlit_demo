@@ -16,11 +16,8 @@ class DemandRegressor():
 	def predict_demand(self, data):
 		return self.model.predict(data)
 
-	def explain(self, data, input_type):
+	def explain(self, data):
 		explainer = shap.TreeExplainer(self.model)
 		shap_values = explainer.shap_values(data)
-		if input_type == 'Загрузить файл':
-			return shap.summary_plot(shap_values, data,
+		return shap.summary_plot(shap_values, data,
 	                      max_display=25, auto_size_plot=True)
-		else:
-			return shap.force_plot(explainer.expected_value, shap_values, feature_cols, matplotlib = True, figsize = (50, 10))

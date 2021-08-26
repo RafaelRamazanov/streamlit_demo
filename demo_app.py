@@ -133,5 +133,5 @@ if data is not None:
 
 	st.markdown('**Влияние признаков**')
 	st.set_option('deprecation.showPyplotGlobalUse', False)
-	plot = model.explain(data, input_type)
+	plot = model.explain(data)
 	st.pyplot(plot)
