@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt 
+import joblib
 import shap
 import math
 from catboost_model import DemandRegressor
@@ -16,6 +17,9 @@ feature_cols = num_features + cat_features
 
 st.sidebar.markdown('**Как Вы хотите ввести данные?**')
 input_type = st.sidebar.selectbox("", ('Загрузить файл', 'Ввести данные с клавиатуры'))
+
+unique_center_id = joblib.load('unique_center_id.pkl')
+unique_meal_id = joblib.load('unique_meal_id.pkl')
 
 st.title('Meal Demand Forecasting')
 
@@ -84,8 +88,8 @@ def get_input(input_type):
 		week = int(st.text_input('Введите текущую неделю:', '146'))
 		checkout_price = st.text_input('Введите checkout price')
 		base_price = st.text_input('Введите base price')
-		center_id = st.text_input('Введите center id')
-		meal_id = st.text_input('Введите meal id')
+		center_id = st.selectbox('Выберите center_id', unique_center_id)
+		meal_id = st.selectbox('Выберите meal_id', unique_meal_id)
 
 		emailer_for_promotion = st.selectbox('Была ли e-mail рассылка?', ['False', 'True'])
 		if emailer_for_promotion == 'True':
@@ -125,7 +129,7 @@ if data is not None:
 				 на {week} неделю: {math.ceil(prediction)} единиц.')
 	else:
 		st.markdown('**Прогноз спроса на продукцию**')
-		st.dataframe(prediction.astype(int))
+		st.dataframe(data[['week', 'center_id', 'meal_id']].join(pd.DataFrame(prediction.astype(int))))
 
 	st.markdown('**Влияние признаков**')
 	st.set_option('deprecation.showPyplotGlobalUse', False)
