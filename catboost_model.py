@@ -11,7 +11,7 @@ feature_cols = num_features + cat_features
 
 class DemandRegressor():
 	def __init__(self):
-		self.model = joblib.load('model.pkl')
+		self.model = joblib.load('model_2.pkl')
 
 	def predict_demand(self, data):
 		return self.model.predict(data)
